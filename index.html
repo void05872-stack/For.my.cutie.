@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>چقدر منو می‌شناسی؟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-900: #060d22;
+    --navy-800: #0a1633;
+    --navy-700: #112150;
+    --navy-600: #1a2e69;
+    --navy-500: #24397a;
+    --blue-400: #5b9cff;
+    --blue-500: #2f6bff;
+    --ice: #e8f0ff;
+    --mist: #9fb3e0;
+    --ember: #ff9a9a;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: "Vazirmatn", "Vazir", Tahoma, system-ui, sans-serif;
+    color: var(--ice);
+    background:
+      radial-gradient(900px 520px at 50% -10%, rgba(47, 107, 255, 0.28), transparent 70%),
+      radial-gradient(700px 480px at 100% 110%, rgba(91, 156, 255, 0.14), transparent 70%),
+      var(--navy-900);
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+    min-height: 100dvh;
+  }
+
+  .card {
+    width: min(100%, 480px);
+    background: linear-gradient(180deg, var(--navy-700), var(--navy-800));
+    border: 1px solid var(--navy-500);
+    border-radius: 28px;
+    padding: 32px 26px 28px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  /* background */
+  #sky {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+  .orb.a {
+    width: 340px; height: 340px;
+    background: #2f6bff;
+    top: -90px; right: -80px;
+    animation: drift-a 22s ease-in-out infinite alternate;
+  }
+  .orb.b {
+    width: 300px; height: 300px;
+    background: #1f3f9e;
+    bottom: -100px; left: -80px;
+    animation: drift-b 26s ease-in-out infinite alternate;
+  }
+  .orb.c {
+    width: 220px; height: 220px;
+    background: #5b9cff;
+    opacity: 0.22;
+    top: 45%; left: 55%;
+    animation: drift-a 30s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift-a { from { transform: translate(0, 0); } to { transform: translate(-60px, 70px); } }
+  @keyframes drift-b { from { transform: translate(0, 0); } to { transform: translate(80px, -60px); } }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(3, 7, 20, 0.7) 100%);
+  }
+
+  .card { position: relative; z-index: 1; }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 28px;
+    padding: 1px;
+    background: linear-gradient(160deg, rgba(91, 156, 255, 0.7), rgba(91, 156, 255, 0) 40%, rgba(47, 107, 255, 0.35));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  .best {
+    margin: -8px 0 28px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(47, 107, 255, 0.16);
+    border: 1px solid rgba(91, 156, 255, 0.5);
+    color: var(--ice);
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.8;
+  }
+
+  .view { display: none; }
+  .view.show { display: block; animation: fade 0.45s ease both; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  /* intro + result */
+  .center { text-align: center; }
+
+  h1 {
+    font-size: clamp(1.8rem, 7vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .lead {
+    color: var(--mist);
+    line-height: 2;
+    margin-bottom: 30px;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .primary {
+    font-size: 1.05rem;
+    font-weight: 600;
+    min-width: 160px;
+    height: 54px;
+    padding: 0 30px;
+    border-radius: 16px;
+    background: var(--blue-500);
+    color: #fff;
+    border: 1px solid var(--blue-400);
+    box-shadow: 0 10px 28px rgba(47, 107, 255, 0.4);
+    transition: transform 0.15s, background 0.2s;
+  }
+  .primary:hover { background: #4379ff; }
+  .primary:active { transform: scale(0.97); }
+
+  /* quiz */
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--navy-600);
+    overflow: hidden;
+  }
+  .bar b {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--blue-400);
+    border-radius: 99px;
+    transition: width 0.45s ease;
+  }
+  .count {
+    color: var(--mist);
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .q {
+    font-size: clamp(1.35rem, 5.4vw, 1.7rem);
+    font-weight: 800;
+    line-height: 1.7;
+    margin-bottom: 22px;
+  }
+
+  .opts { display: grid; gap: 12px; }
+
+  .opt {
+    width: 100%;
+    min-height: 56px;
+    padding: 12px 18px;
+    border-radius: 16px;
+    border: 1px solid var(--navy-500);
+    background: var(--navy-900);
+    color: var(--ice);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--blue-400); background: var(--navy-800); }
+  .opt:active:not(:disabled) { transform: scale(0.985); }
+  .opt:disabled { cursor: default; }
+
+  .opt .mark { font-size: 1.1rem; opacity: 0; }
+
+  .opt.right {
+    border-color: var(--blue-400);
+    background: rgba(47, 107, 255, 0.28);
+  }
+  .opt.right .mark { opacity: 1; color: var(--blue-400); }
+
+  .opt.wrong {
+    border-color: var(--ember);
+    background: rgba(255, 154, 154, 0.12);
+  }
+  .opt.wrong .mark { opacity: 1; color: var(--ember); }
+
+  .opt.dim { opacity: 0.45; }
+
+  .feedback {
+    min-height: 1.9em;
+    margin-top: 18px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--mist);
+  }
+
+  .next-wrap { margin-top: 14px; text-align: center; min-height: 54px; }
+
+  /* result */
+  .score {
+    font-size: clamp(3.4rem, 16vw, 4.6rem);
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--blue-400);
+    margin-bottom: 6px;
+  }
+  .result-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+
+  button:focus-visible {
+    outline: 3px solid var(--blue-400);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .view.show { animation: none; }
+    .bar b { transition: none; }
+    .orb { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb a"></div>
+<div class="orb b"></div>
+<div class="orb c"></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<main class="card">
+
+  <!-- Intro -->
+  <section class="view center" id="intro">
+    <h1>چقدر منو می‌شناسی؟</h1>
+    <p class="lead">چندتا سوال دربارهٔ امیر.<br>ببینیم چند تا رو درست جواب می‌دی</p>
+    <button class="primary" id="start" type="button">شروع</button>
+  </section>
+
+  <!-- Quiz -->
+  <section class="view" id="quiz">
+    <div class="top">
+      <div class="bar" aria-hidden="true"><b id="bar"></b></div>
+      <span class="count" id="count"></span>
+    </div>
+    <h2 class="q" id="question"></h2>
+    <div class="opts" id="opts"></div>
+    <p class="feedback" id="feedback" role="status"></p>
+    <div class="next-wrap"><button class="primary" id="next" type="button" hidden>بعدی</button></div>
+  </section>
+
+  <!-- Result -->
+  <section class="view center" id="result">
+    <div class="score" id="score"></div>
+    <h2 class="result-title" id="rtitle"></h2>
+    <p class="lead" id="rtext"></p>
+    <p class="best">تو بهترین آدم زندگی امیری 💙</p>
+    <button class="primary" id="again" type="button">دوباره امتحان کن</button>
+  </section>
+
+</main>
+
+<script>
+  /* ============================================================
+     اینجا سوال‌ها رو عوض کن.
+     answer = شمارهٔ گزینهٔ درست (از صفر شروع می‌شه: 0 = اولی، 1 = دومی ...)
+     ============================================================ */
+  const QUESTIONS = [
+    { q: 'غذای مورد علاقه امیر چیه؟',
+      options: ['پیتزا', 'فست‌فود', 'قورمه‌سبزی', 'کباب'], answer: 3 },
+    { q: 'کار مورد علاقه امیر تو وقت آزاد چیه؟',
+      options: ['بازی کردن', 'فیلم و سریال', 'ورزش', 'چت کردن با کیوتچه'], answer: 3 },
+    { q: 'فصل مورد علاقه امیر؟',
+      options: ['بهار', 'تابستون', 'پاییز', 'زمستون'], answer: 2 },
+    { q: 'کجا با هم آشنا شدیم؟',
+      options: ['دانشگاه', 'کافه', 'آنلاین', 'خونهٔ دوستا'], answer: 2 },
+    { q: 'امیر از چی بیشتر می‌ترسه؟',
+      options: ['سوسک', 'عصبانی شدن نگین', 'ارتفاع', 'تاریکی'], answer: 1 }
+  ];
+
+  const RESULTS = [
+    { min: 0, title: 'هنوز کلی کار داریم', text: 'نگران نباش، فرصت یاد گرفتن زیاده.' },
+    { min: 2, title: 'بد نبود', text: 'نصفش رو می‌دونی. یه کم دیگه دقت کن.' },
+    { min: 4, title: 'خیلی خوب', text: 'تقریباً همه رو درست گفتی.' },
+    { min: 5, title: 'کامل!', text: 'همه رو درست گفتی. امیر رو از همه بهتر می‌شناسی.' }
+  ];
+
+  const $ = id => document.getElementById(id);
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const fa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+
+  const views = { intro: $('intro'), quiz: $('quiz'), result: $('result') };
+  function show(name) {
+    Object.entries(views).forEach(([k, v]) => v.classList.toggle('show', k === name));
+  }
+
+  let index = 0, score = 0, locked = false;
+
+  function render() {
+    const item = QUESTIONS[index];
+    locked = false;
+    $('count').textContent = fa(index + 1) + ' از ' + fa(QUESTIONS.length);
+    $('bar').style.width = (index / QUESTIONS.length * 100) + '%';
+    $('question').textContent = item.q;
+    $('feedback').textContent = '';
+    $('next').hidden = true;
+    $('next').textContent = index === QUESTIONS.length - 1 ? 'دیدن نتیجه' : 'بعدی';
+
+    const box = $('opts');
+    box.innerHTML = '';
+    item.options.forEach((text, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.innerHTML = '<span></span><span class="mark" aria-hidden="true"></span>';
+      b.firstChild.textContent = text;
+      b.addEventListener('click', () => pick(i, b));
+      box.appendChild(b);
+    });
+  }
+
+  function pick(i, btn) {
+    if (locked) return;
+    locked = true;
+    const item = QUESTIONS[index];
+    const all = [...$('opts').children];
+    const ok = i === item.answer;
+
+    all.forEach((b, k) => {
+      b.disabled = true;
+      if (k === item.answer) { b.classList.add('right'); b.querySelector('.mark').textContent = '✓'; }
+      else if (k === i) { b.classList.add('wrong'); b.querySelector('.mark').textContent = '✕'; }
+      else b.classList.add('dim');
+    });
+
+    if (ok) score++;
+    $('feedback').textContent = ok ? 'آفرین، درست بود 💙' : 'نه عزیزم، جواب درست مشخص شده';
+    $('bar').style.width = ((index + 1) / QUESTIONS.length * 100) + '%';
+    $('next').hidden = false;
+    $('next').focus();
+  }
+
+  function finish() {
+    const r = [...RESULTS].reverse().find(x => score >= x.min && (x.min !== 5 || score === QUESTIONS.length))
+      || RESULTS[0];
+    $('score').textContent = fa(score) + ' از ' + fa(QUESTIONS.length);
+    $('rtitle').textContent = r.title;
+    $('rtext').textContent = r.text;
+    show('result');
+  }
+
+  $('start').addEventListener('click', () => { index = 0; score = 0; render(); show('quiz'); });
+  $('next').addEventListener('click', () => {
+    if (index < QUESTIONS.length - 1) { index++; render(); }
+    else finish();
+  });
+  $('again').addEventListener('click', () => { index = 0; score = 0; render(); show('quiz'); });
+
+  /* starfield */
+  (function () {
+    const cv = $('sky');
+    const ctx = cv.getContext('2d');
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let W = 0, H = 0, stars = [], shot = null, nextShot = 0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function setup() {
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.round(W * H / 5500);
+      stars = Array.from({ length: n }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() < 0.12 ? rand(1.4, 2.1) : rand(0.4, 1.2),
+        base: rand(0.25, 0.9),
+        sp: rand(0.4, 1.6),
+        ph: Math.random() * 6.28,
+        tint: Math.random() < 0.3 ? '160,195,255' : '232,240,255'
+      }));
+    }
+
+    function frame(t) {
+      ctx.clearRect(0, 0, W, H);
+      const s = t / 1000;
+      for (const st of stars) {
+        const a = still ? st.base : st.base * (0.55 + 0.45 * Math.sin(s * st.sp + st.ph));
+        ctx.fillStyle = 'rgba(' + st.tint + ',' + a.toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.arc(st.x, st.y, st.r, 0, 6.283);
+        ctx.fill();
+        if (st.r > 1.4) {
+          ctx.fillStyle = 'rgba(' + st.tint + ',' + (a * 0.12).toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.arc(st.x, st.y, st.r * 4, 0, 6.283);
+          ctx.fill();
+        }
+      }
+
+      if (!still) {
+        if (!shot && s > nextShot) {
+          shot = { x: rand(W * 0.3, W), y: rand(0, H * 0.4), life: 0 };
+        }
+        if (shot) {
+          shot.life += 0.018;
+          const dx = -shot.life * 260, dy = shot.life * 150;
+          const x = shot.x + dx, y = shot.y + dy;
+          const g = ctx.createLinearGradient(x, y, x + 90, y - 52);
+          const alpha = Math.sin(Math.min(shot.life, 1) * Math.PI);
+          g.addColorStop(0, 'rgba(232,240,255,' + alpha + ')');
+          g.addColorStop(1, 'rgba(232,240,255,0)');
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + 90, y - 52);
+          ctx.stroke();
+          if (shot.life >= 1) { shot = null; nextShot = s + rand(6, 12); }
+        }
+      }
+      if (!still) requestAnimationFrame(frame);
+    }
+
+    setup();
+    nextShot = 3;
+    requestAnimationFrame(frame);
+    let lastW = window.innerWidth;
+    window.addEventListener('resize', () => {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      setup();
+      if (still) requestAnimationFrame(frame);
+    });
+  })();
+
+  show('intro');
+</script>
+</body>
+  </html>
